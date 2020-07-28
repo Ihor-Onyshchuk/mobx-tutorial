@@ -1,65 +1,53 @@
-import React, { Component, StrictMode } from 'react';
+import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import DevTools from 'mobx-react-devtools';
 import { observer } from 'mobx-react';
 
 import * as serviceWorker from './serviceWorker';
-import { observable, computed, configure, action } from 'mobx';
+import { observable, configure, action, decorate, runInAction } from 'mobx';
 
 configure({ enforceActions: "observed" });
 
-const nickName = observable({
-  firstName: 'Ihor',
-  age: 23,
+class Store {
+  user: null;
 
-  get nickName() {
-    console.log('generate nickName');
-    return `${this.firstName}${this.age}`
-  },
-
-  increment() {
-    this.age++
-  },
-
-  decrement() {
-    this.age--
+  getUser() {
+    fetch('https://randomuser.me/api/')
+      .then(resonse => resonse.json())
+      .then(json => json.results
+        // ? this.setUser(json.results)
+        // : null
+        ? runInAction(() => this.user = json.results[0])
+        : null
+      );
   }
-}, {
-  increment: action('Plus one'),
-  decrement: action('Minus One')
-}, {
-  name: 'nickNameObservableObject'
-});
 
-// const todos = observable([
-//   { text: 'Learn React' },
-//   { text: 'Learn Mobx' }
-// ]);
+  setUser(results) {
+    this.user = results[0];
+  }
+}
 
-@observer class Counter extends Component {
+decorate(Store, {
+  user: observable,
+  getUser: action.bound,
+  setUser: action
+})
 
-  handleIncrement = () => this.props.store.increment();
-  handleDecrement = () => this.props.store.decrement();
+const appStore = new Store();
 
-
+@observer class App extends Component {
   render() {
-    const { nickName, age } = this.props.store;
+    const { user, getUser } = this.props.store;
     return (
-      <div className="App">
+      <div>
         <DevTools />
-        <h2>{nickName}</h2>
-        <h2>{age}</h2>
-        <button onClick={this.handleDecrement}>-1</button>
-        <button onClick={this.handleIncrement}>+1</button>
-
-        {/* <ul>
-          {todos.map(({ text }) => <li key={text}>{text}</li>)}
-        </ul> */}
+        <button onClick={getUser}>Get User</button>
+        <h2>{user ? user.login.username : 'default name'}</h2>
       </div>
     );
   }
 }
 
-ReactDOM.render(<Counter store={nickName} />, document.getElementById('root'));
+ReactDOM.render(<App store={appStore} />, document.getElementById('root'));
 
 serviceWorker.unregister();
