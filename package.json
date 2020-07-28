@@ -113,11 +113,13 @@
       "react-app"
     ],
     "plugins": [
-  		[
-  			"@babel/plugin-proposal-decorators",
-  			{ "legacy": true }
-  		]
-	  ]
+      [
+        "@babel/plugin-proposal-decorators",
+        {
+          "legacy": true
+        }
+      ]
+    ]
   },
   "devDependencies": {
     "@babel/plugin-proposal-decorators": "^7.2.3",
