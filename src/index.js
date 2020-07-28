@@ -9,7 +9,10 @@ import { observable, configure, action, decorate, runInAction } from 'mobx';
 configure({ enforceActions: "observed" });
 
 class Store {
-  user: null;
+
+  constructor() {
+    this.user = null;
+  }
 
   getUser() {
     fetch('https://randomuser.me/api/')
