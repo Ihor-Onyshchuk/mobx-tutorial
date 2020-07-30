@@ -16,12 +16,12 @@ class Store {
 
   getUser() {
     fetch('https://randomuser.me/api/')
-      .then(resonse => resonse.json())
+      .then(response => response.json())
       .then(json => json.results
-        // ? this.setUser(json.results)
-        // : null
         ? runInAction(() => this.user = json.results[0])
         : null
+        // ? this.setUser(json.results)
+        // : null
       );
   }
 
