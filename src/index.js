@@ -4,7 +4,7 @@ import DevTools from 'mobx-react-devtools';
 import { observer } from 'mobx-react';
 
 import * as serviceWorker from './serviceWorker';
-import { observable } from 'mobx';
+import { observable, when, autorun } from 'mobx';
 
 const counterState = observable({
   count: 0
@@ -17,6 +17,19 @@ counterState.increment = function () {
 counterState.decrement = function () {
   this.count--
 }
+
+when(
+  () => counterState.count > 5,
+  () => { alert('Count value is more than 5') }
+);
+
+autorun(
+  () => alert(`Count value is: ${counterState.count}`),
+  {
+    name: 'Custom autorun',
+    delay: 2000,
+  }
+);
 
 @observer class Counter extends Component {
 
